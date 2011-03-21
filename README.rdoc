@@ -13,7 +13,7 @@ Example:
 Make sure it is running inside you project's repository and JUnit is on the classpath.
 
 
-==2) Set Up Hook (Optional)
+==2) Hook It Up (Optional)
 
 Set up a post-receive hook in your git repository to call a URL on your build server: http:// yourserver.com:44321/SecretPhrase
 
