@@ -1,55 +1,32 @@
-==The Essence of Continuous Deployment
-
-Simploy.java a single class that replaces the overhead of Hudson on Tomcat and the clunkiness of JUnit tests running in Ant.
+Tired of the overhead of Hudson on Tomcat? Sick of the clunkiness of JUnit tests running in Ant?
 
 
-==1) Run Simploy
+==1) Run Simploy on Your Build Server
 
   java Simploy compileCommand testsRootFolder deployCommand
 
 Example:
 
+  cd /my/project/repository
   java Simploy "ant build" ./bin/tests "ant deploy"
 
-Make sure JUnit is on the classpath.
+Make sure it is running inside you project's repository and JUnit is on the classpath.
 
 
-Simploy executes the following cycle:
-- Git pull
-- Compile your code and tests
-- Run your JUnit tests
-- 
+==2) Set Up Hook (Optional)
+
+Set up a "post-receive hook" in your git repository to call a URL on your build server: http://yourserver.com:44321/SecretPhrase
+
+On Github that's in "Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL. Simploy will listen for that request on port 44321.
+
+The "SecretPhrase" and the port number can be changed trivially inside Simploy code.
 
 
-==2) Set Up Your Hook
+==3) Forget About It
 
-Configure "Github > YourProject > Admin > Service Hooks > Post-Receive URL" to point to http://yourserver.com:44321/SecretPhrase
+Every 5 minutes or every time the hook URL is called, Simploy will do the following:
+- Execute the command passed in to compile your code and tests.
+- Run all your classes ending in "Test" as JUnit tests.
+- If all tests pass, execute the deploy command passed in.
 
-Everytime github receives a push in YourProject it will call that URL. Simploy will listen for that request on port 44321 and do a pull/compile/test/deploy attempt.
-
-The "SecretPhrase" and the port number can be changed inside the code.
-
-
-==2) java Simploy "ant compile" ./bin/tests "ant deploy"
-
-Run Simploy on yourserver.com passing it 3 parameters:
-- The command to run to compile your code and tests.
-- The root directory for all your tests. All classes ending in "...Test" will be run.
-- The command to deploy 
-Precisa Eclipse Helios e o plugin do GWT 2.2 instalado nele.
-
-  git clone git@github.com:teamware/agitos.git
-
-Importar no eclipse o projeto agitos que esta dentro da pasta agitos.
-
-Já removimos todas as dependencias e migramos para GWT 2.2.
-
-==Para rodar em desenvolvimento
-
-Botão direito no projeto e Run As > WebApplication (Google)
-
-==Para rodar sem o ambiente de dev.
-
-Compilar no eclipse, usando o icone do GWT no toolbar do eclipse ou botão direito no projeto agitos
-e depois Google >> GWT Compile
-
+That's it.
