@@ -1,5 +1,41 @@
-==Para começar a desenvolver
+==The Essence of Continuous Deployment
 
+Simploy.java a single class that replaces the overhead of Hudson on Tomcat and the clunkiness of JUnit tests running in Ant.
+
+
+==1) Run Simploy
+
+  java Simploy compileCommand testsRootFolder deployCommand
+
+Example:
+
+  java Simploy "ant build" ./bin/tests "ant deploy"
+
+Make sure JUnit is on the classpath.
+
+
+Simploy executes the following cycle:
+- Git pull
+- Compile your code and tests
+- Run your JUnit tests
+- 
+
+
+==2) Set Up Your Hook
+
+Configure "Github > YourProject > Admin > Service Hooks > Post-Receive URL" to point to http://yourserver.com:44321/SecretPhrase
+
+Everytime github receives a push in YourProject it will call that URL. Simploy will listen for that request on port 44321 and do a pull/compile/test/deploy attempt.
+
+The "SecretPhrase" and the port number can be changed inside the code.
+
+
+==2) java Simploy "ant compile" ./bin/tests "ant deploy"
+
+Run Simploy on yourserver.com passing it 3 parameters:
+- The command to run to compile your code and tests.
+- The root directory for all your tests. All classes ending in "...Test" will be run.
+- The command to deploy 
 Precisa Eclipse Helios e o plugin do GWT 2.2 instalado nele.
 
   git clone git@github.com:teamware/agitos.git
