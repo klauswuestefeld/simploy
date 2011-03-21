@@ -24,7 +24,7 @@ The "SecretPhrase" and port number can be changed trivially inside Simploy code.
 
 ==3) Forget About It
 
-Every 5 minutes or every time the hook URL is called, Simploy does a git pull. If there were new changes, it does the following:
+Every 5 minutes and every time the hook URL is called, Simploy does a git pull. If there were new changes, it does the following:
 - Execute the command passed in to *compile* your code and tests.
 - Run all your classes ending in "Test" as JUnit *tests*.
 - If all tests pass, execute the *deploy* command passed in.
