@@ -17,13 +17,15 @@ public class Simploy extends RunListener implements Runnable {
 
 
 	private static final String USAGE =
-		"Usage: Simploy buildCommand compiledTestsRootFolder deployCommand" +
+		"Usage: " +
+		"\n  java Simploy compileCommand compiledTestsRootFolder deployCommand" +
 		"\n" +
-		"\nExample: java Simploy \"ant build\" ./bin/tests \"ant deploy\"" +
-		"\nMake sure JUnit is on the classpath.";
+		"\nExample:" +
+		"\n  java Simploy \"ant build\" ./bin/tests \"ant deploy\"" +
+		"\nMake sure you are in a git repository and JUnit is on the classpath.";
 
 
-	private String _buildCommand;
+	private String _compileCommand;
 	private File _testsFolder;
 	private String _deployCommand;
 
@@ -110,7 +112,7 @@ public class Simploy extends RunListener implements Runnable {
 		if (isUpToDate)
 			return;
 		
-		exec(_buildCommand);
+		exec(_compileCommand);
 		runTests();
 		if (_someTestHasFailed)
 			return;
@@ -191,7 +193,7 @@ public class Simploy extends RunListener implements Runnable {
 
 
 	private void tryToParseArgs(String[] args) {
-		_buildCommand = args[0];
+		_compileCommand = args[0];
 		_testsFolder = new File(args[1]);
 		_deployCommand = args[2];
 	}
