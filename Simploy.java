@@ -19,7 +19,8 @@ public class Simploy extends RunListener implements Runnable {
 	private static final String USAGE =
 		"Usage: Simploy buildCommand compiledTestsRootFolder deployCommand" +
 		"\n" +
-		"\nExample: java Simploy \"ant build\" ./bin/tests \"ant deploy\"";
+		"\nExample: java Simploy \"ant build\" ./bin/tests \"ant deploy\"" +
+		"\nMake sure JUnit is on the classpath.";
 
 
 	private String _buildCommand;

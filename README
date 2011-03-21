@@ -1,0 +1,19 @@
+==Para começar a desenvolver
+
+Precisa Eclipse Helios e o plugin do GWT 2.2 instalado nele.
+
+  git clone git@github.com:teamware/agitos.git
+
+Importar no eclipse o projeto agitos que esta dentro da pasta agitos.
+
+Já removimos todas as dependencias e migramos para GWT 2.2.
+
+==Para rodar em desenvolvimento
+
+Botão direito no projeto e Run As > WebApplication (Google)
+
+==Para rodar sem o ambiente de dev.
+
+Compilar no eclipse, usando o icone do GWT no toolbar do eclipse ou botão direito no projeto agitos
+e depois Google >> GWT Compile
+
