@@ -18,10 +18,10 @@ public class Simploy extends RunListener implements Runnable {
 
 	private static final String USAGE =
 		"Usage: " +
-		"\n  java Simploy compileCommand compiledTestsRootFolder deployCommand [hookSecretPhrase]" +
+		"\n  java Simploy compileCommand compiledTestsRootFolder deployCommand [password]" +
 		"\n" +
 		"\nExample:" +
-		"\n  java Simploy \"ant build\" ./bin/tests \"ant deploy\" secret123" +
+		"\n  java Simploy \"ant build\" ./bin/tests \"ant deploy\" password123" +
 		"\n" +
 		"\nMake sure you are in a git repository and JUnit is on the classpath.";
 

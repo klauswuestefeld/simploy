@@ -3,30 +3,30 @@ Tired of the overhead of Hudson on Tomcat? Sick of the clunkiness of JUnit tests
 
 ==1) Run Simploy on Your Build Server
 
-  java Simploy compileCommand testsRootFolder deployCommand
+  java Simploy compileCommand testsRootFolder deployCommand [password]
 
 Example:
 
   cd /my/project/repository
-  java Simploy "ant build" ./bin/tests "ant deploy"
+  java Simploy "ant build" ./bin/tests "ant deploy" password123
 
 Make sure it is running inside you project's repository and JUnit is on the classpath.
 
 
 ==2) Hook It Up (Optional)
 
-Set up a post-receive hook in your git repository to call a URL on your build server: http:// yourserver.com:44321/SecretPhrase
+Set up a post-receive hook in your git repository to call a URL on your build server, for example: http:// yourserver.com:44321/password123
 
-On Github that's in "Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL. Simploy will listen for that request on port 44321.
+On Github that's in "Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL.
 
-The "SecretPhrase" and port number can be changed trivially inside Simploy code.
+If you pass it the optional password argument, Simploy will listen for that on port 44321.
 
 
 ==3) Forget About It
 
 Every 5 minutes and every time the hook URL is called, Simploy does a git pull. If there were new changes, it does the following:
 - Execute the command passed in to *compile* your code and tests.
-- Run all your classes ending in "Test" as JUnit *tests*.
+- Run all your classes ending in *Test* as JUnit tests.
 - If all tests pass, execute the *deploy* command passed in.
 
 That's it.
