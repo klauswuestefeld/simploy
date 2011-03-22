@@ -18,10 +18,11 @@ public class Simploy extends RunListener implements Runnable {
 
 	private static final String USAGE =
 		"Usage: " +
-		"\n  java Simploy compileCommand compiledTestsRootFolder deployCommand" +
+		"\n  java Simploy compileCommand compiledTestsRootFolder deployCommand [hookSecretPhrase]" +
 		"\n" +
 		"\nExample:" +
-		"\n  java Simploy \"ant build\" ./bin/tests \"ant deploy\"" +
+		"\n  java Simploy \"ant build\" ./bin/tests \"ant deploy\" secret123" +
+		"\n" +
 		"\nMake sure you are in a git repository and JUnit is on the classpath.";
 
 
@@ -31,10 +32,10 @@ public class Simploy extends RunListener implements Runnable {
 
 	private boolean _someTestHasFailed = false;
 
+	private String _secret;
 	private ServerSocket _serverSocket;
 	private static final int TCP_PORT = 44321;
 	private static final int DEPLOY_REQUEST_TIMEOUT = 1000 * 7;
-	private static final String SECRET = "SecretPhrase";
 
 	
 	private static final int DOT_CLASS = ".class".length();
@@ -48,7 +49,8 @@ public class Simploy extends RunListener implements Runnable {
 	private Simploy(String[] args) throws Exception {
 		parseArgs(args);
 		
-		startListeningForBuildRequests();
+		if (_secret != null)
+			startListeningForBuildRequests();
 		
 		while (true) {
 			deployNewVersionIfAvailable();
@@ -59,6 +61,7 @@ public class Simploy extends RunListener implements Runnable {
 	
 	private void startListeningForBuildRequests() throws IOException {
 		_serverSocket = new ServerSocket(TCP_PORT);
+		System.out.println("Listening for requests on port " + TCP_PORT);
 		
 		Thread thread = new Thread(this);
 		thread.setDaemon(true);
@@ -72,52 +75,65 @@ public class Simploy extends RunListener implements Runnable {
 			try {
 				acceptRequest();
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 	}
 
 
 	private void acceptRequest() throws Exception {
 		Socket socket = _serverSocket.accept();
-		boolean isValidRequest = false;
+		System.out.println("Request Received");
+		
 		try {
-			isValidRequest = validateRequest(socket);
+			validateRequest(socket);
 		} finally {
 			socket.close();
 		}
-		if (isValidRequest)
-			deployNewVersionIfAvailable();
+		deployNewVersionIfAvailable();
 	}
 
 	
-	private boolean validateRequest(Socket socket) throws Exception {
+	private void validateRequest(Socket socket) throws Exception {
 		socket.setSoTimeout(DEPLOY_REQUEST_TIMEOUT);
 		long t0 = System.currentTimeMillis();
 		InputStream inputStream = socket.getInputStream();
 		String request = "";
-		while (true) {
+		while (!request.contains(_secret)) {
 			int read = inputStream.read();
-			if (read == -1) return false;
+			if (read == -1) throwInvalid(request);
 			request += (char)read;
-			if (System.currentTimeMillis() - t0 > DEPLOY_REQUEST_TIMEOUT) return false;
-			if (request.length() > 4000) return false;
-			if (request.contains(SECRET)) return true;
+			if (System.currentTimeMillis() - t0 > DEPLOY_REQUEST_TIMEOUT) throwInvalid(request);
+			if (request.length() > 4000) throwInvalid(request);
 		}
 	}
 
 
+	private void throwInvalid(String request) throws Exception {
+		throw new Exception("Invalid Request: " + request);
+	}
+
+
 	synchronized
-	private void deployNewVersionIfAvailable() throws Exception {
-		boolean isUpToDate = gitPull();
-		if (isUpToDate)
-			return;
-		
-		exec(_compileCommand);
-		runTests();
-		if (_someTestHasFailed)
-			return;
-		
-		exec(_deployCommand);
+	private void deployNewVersionIfAvailable() {
+		try {
+			tryToDeployNewVersionIfAvailable();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+
+	private void tryToDeployNewVersionIfAvailable() throws Exception {
+			boolean isUpToDate = gitPull();
+			if (isUpToDate)
+				return;
+			
+			exec(_compileCommand);
+			runTests();
+			if (_someTestHasFailed)
+				return;
+			
+			exec(_deployCommand);
 	}
 
 
@@ -127,7 +143,8 @@ public class Simploy extends RunListener implements Runnable {
 	}
 
 
-	private void runTests() {
+	private void runTests() throws Exception {
+		_someTestHasFailed = false;
 		JUnitCore junit = new JUnitCore();
 		junit.addListener(this);
 		junit.run(findTestClasses());
@@ -154,6 +171,8 @@ public class Simploy extends RunListener implements Runnable {
 
 
 	private String exec(String command) throws Exception {
+		System.out.println("Executing: " + command);
+		
 		Process process = Runtime.getRuntime().exec(command);
 		printOut(process.getErrorStream());
 		String stdOut = printOut(process.getInputStream());
@@ -166,7 +185,7 @@ public class Simploy extends RunListener implements Runnable {
 	}
 
 
-	private String printOut(InputStream inputStream) throws IOException {
+	private String printOut(InputStream inputStream) throws Exception {
 		String result = "";
 		while (true) {
 			int read = inputStream.read();
@@ -196,19 +215,20 @@ public class Simploy extends RunListener implements Runnable {
 		_compileCommand = args[0];
 		_testsFolder = new File(args[1]);
 		_deployCommand = args[2];
+		if (args.length == 4) _secret = args[3];
 	}
 
 
-	private Class<?>[] findTestClasses() {
+	private Class<?>[] findTestClasses() throws Exception {
 		List<Class<?>> result = convertToClasses(testFileNames());
-		if (result.size() == 0) exitWith("No test classes found in: " + _testsFolder.getAbsolutePath());
+		if (result.size() == 0) throw new Exception("No test classes found in: " + _testsFolder.getAbsolutePath());
 		return result.toArray(new Class[0]);
 	}
 
 	
-	private List<String> testFileNames() {
+	private List<String> testFileNames() throws Exception {
 		List<String> result = new ArrayList<String>();
-		if (!_testsFolder.exists() || !_testsFolder.isDirectory()) exitWith("Tests root folder not found or not a folder: " + _testsFolder);
+		if (!_testsFolder.exists() || !_testsFolder.isDirectory()) throw new Exception("Tests root folder not found or not a folder: " + _testsFolder);
 		accumulateTestClassFileNames(result, _testsFolder);
 		return result;
 	}
