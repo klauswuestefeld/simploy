@@ -17,7 +17,7 @@ Make sure it is running inside you project's repository and JUnit is on the clas
 
 Set up a post-receive hook in your git repository to call a URL on your build server, for example: http:// yourserver.com:44321/password123
 
-On Github that's in "Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL.
+On Github that's in "YourProject > Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL.
 
 If you pass it the optional password argument, Simploy will listen for that on port 44321.
 
