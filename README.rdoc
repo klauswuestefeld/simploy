@@ -1,16 +1,16 @@
-Tired of the overhead of Hudson on Tomcat? Sick of the clunkiness of JUnit tests running in Ant? Simploy is a single java class that supercedes all that for simple projects.
+Tired of the overhead of Hudson on Tomcat? Sick of the clunkiness of JUnit tests running in Ant? For simple projects, Simploy supercedes all that with a couple of classes.
 
 
 ==1) Run Simploy on Your Build Server
 
-  java Simploy compileCommand testsRootFolder deployCommand [password]
+  java Simploy compileCommand testsRootFolder jarsRootFolder deployCommand [password]
 
 Example:
 
   cd /my/project/repository
-  java Simploy "ant build" ./bin/tests "ant deploy" password123
+  java Simploy "ant build" ./bin/tests ./lib "ant deploy" password123
 
-Make sure it is running inside you project's repository and JUnit is on the classpath.
+Make sure it is running inside you project's repository.
 
 
 ==2) Hook It Up (Optional)
