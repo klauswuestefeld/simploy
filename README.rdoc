@@ -15,7 +15,7 @@ Make sure it is running inside you project's repository.
 
 ==2) Hook It Up (Optional)
 
-Set up a post-receive hook in your git repository to call a URL on your build server, for example: \http://yourserver.com:44321/password123
+Set up a post-receive hook in your git repository to call a URL on your build server, for example: http:// yourserver.com:44321/password123
 
 On Github that's in "YourProject > Admin > Service Hooks > Post-Receive URL". Everytime Github receives a push in YourProject it will call that URL.
 
@@ -31,6 +31,6 @@ Every 5 minutes and every time the hook URL is called, Simploy does a git pull. 
 
 ==Monitoring
 
-To get a status report on your build use: \http://yourserver.com:44321/
+To get a status report on your build use: http:// yourserver.com:44321/
 
 That's it.
