@@ -12,6 +12,10 @@ public class SimployHttpServer {
 
 	private static final int TCP_PORT = 44321;
 	private static final int REQUEST_TIMEOUT = 1000 * 3;
+	private static final String REPLY_HEADER =
+			"HTTP/1.1 200 OK\r\n" +
+			"Content-Type: text/plain\r\n" +
+			"\r\n";
 
 	static void start(String password) throws IOException {
 		_password = password;
@@ -38,9 +42,7 @@ public class SimployHttpServer {
 		Socket socket = _serverSocket.accept();
 		System.out.println("Request Received");
 		
-		OutputStream output = socket.getOutputStream();
-		output.write(SimployCore.report().getBytes("UTF-8"));
-		output.flush();
+		sendReport(socket);
 		
 		try {
 			validateBuildRequest(socket);
@@ -50,6 +52,14 @@ public class SimployHttpServer {
 		new Thread() { @Override public void run() {
 			SimployCore.build();
 		}}.start();
+	}
+
+
+	private static void sendReport(Socket socket) throws Exception {
+		OutputStream output = socket.getOutputStream();
+		String reply = REPLY_HEADER + SimployCore.report(); 
+		output.write(reply.getBytes("UTF-8"));
+		output.flush();
 	}
 
 	
