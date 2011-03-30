@@ -17,9 +17,8 @@ class SimployTestsRunner extends RunListener {
 
 	private static final int DOT_CLASS = ".class".length();
 
-	private static boolean _someTestFailed = false;
-
 	private final String _testsFolderPath;
+	private boolean _someTestFailed = false;
 
 	
 	public static void runAllTestsIn(String testsPath, String libJarsFolder) throws Exception {
