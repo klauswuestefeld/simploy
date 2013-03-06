@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -27,7 +28,7 @@ class SimployTestsRunner extends RunListener {
 
 
 	private static void runInSeparateClassLoader(String testsPath, String libJarsFolder) throws Exception {
-		Class<?> inSeparateClassloader = separateClassLoader(libJarsFolder).loadClass(SimployTestsRunner.class.getName());
+		Class<?> inSeparateClassloader = separateClassLoader(testsPath, libJarsFolder).loadClass(SimployTestsRunner.class.getName());
 		instantiate(inSeparateClassloader, testsPath);
 	}
 
@@ -57,17 +58,17 @@ class SimployTestsRunner extends RunListener {
 	}
 
 	
-	static private URLClassLoader separateClassLoader(String libJarsFolder) throws Exception {
+	static private URLClassLoader separateClassLoader(String testsPath, String libJarsFolder) throws Exception {
 		ClassLoader noParent = null;
-		return new URLClassLoader(classpath(libJarsFolder), noParent);
+		return new URLClassLoader(classpath(testsPath, libJarsFolder), noParent);
 	}
 	
 	
-	private static URL[] classpath(String libJarsFolder) throws Exception {
+	private static URL[] classpath(String testsPath, String libJarsFolder) throws Exception {
 		List<String> jarPaths = fileNamesEndingWith(new File(libJarsFolder), ".jar");
 		printClasspath(jarPaths);
 		List<URL> result = convertToURLs(jarPaths);
-		result.add(0, myOwnPath());
+		result.add(0, toURL(testsPath));
 		return result.toArray(new URL[result.size()]);
 	}
 
@@ -80,15 +81,10 @@ class SimployTestsRunner extends RunListener {
 	}
 
 
-	private static URL myOwnPath() {
-		return SimployTestsRunner.class.getResource("");
-	}
-
-	
 	private static List<URL> convertToURLs(List<String> paths) throws Exception {
 		List<URL> result = new ArrayList<URL>();
 		for (String path : paths)
-			result.add(new File(path).toURI().toURL());
+			result.add(toURL(path));
 		return result;
 	}
 
@@ -171,6 +167,11 @@ class SimployTestsRunner extends RunListener {
 		String name = file.getName();
 		if (name.endsWith(ending))
 			fileNames.add(file.getAbsolutePath());
+	}
+	
+	
+	private static URL toURL(String path) throws IOException {
+		return new File(path).getCanonicalFile().toURI().toURL();
 	}
 
 }
