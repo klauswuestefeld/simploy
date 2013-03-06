@@ -69,6 +69,7 @@ class SimployTestsRunner extends RunListener {
 		printClasspath(jarPaths);
 		List<URL> result = convertToURLs(jarPaths);
 		result.add(0, toURL(testsPath));
+		result.add(0, myOwnPath());
 		return result.toArray(new URL[result.size()]);
 	}
 
@@ -169,6 +170,9 @@ class SimployTestsRunner extends RunListener {
 			fileNames.add(file.getAbsolutePath());
 	}
 	
+	private static URL myOwnPath() {
+		return SimployTestsRunner.class.getResource("");
+	}
 	
 	private static URL toURL(String path) throws IOException {
 		return new File(path).getCanonicalFile().toURI().toURL();
