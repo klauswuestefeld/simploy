@@ -21,19 +21,32 @@ public class SimployCore {
 	private static Date _lastSuccessDate;
 	
 	
+
 	synchronized
-	static	void build() {
+	static void build() {
+		build(false);
+	}
+
+	
+	synchronized
+	static void buildEvenIfNoChanges() {
+		build(true);
+	}
+
+	
+	static private void build(boolean buildEvenIfNoChanges) {
 		startCapturingOutputs();
 		try {
-			tryToBuild();
+			tryToBuild(buildEvenIfNoChanges);
 		} finally {
 			stopCapturingOutputs();
 		}
 	}
 
 
-	private static void tryToBuild() {
-		if (!pullNewVersion())
+	private static void tryToBuild(boolean buildEvenIfNoChanges) {
+		boolean hasChanges = pullChanges();
+		if (!hasChanges && !buildEvenIfNoChanges)
 			return;
 		
 		_lastBuildDate = new Date();
@@ -52,7 +65,7 @@ public class SimployCore {
 	}
 
 
-	private static boolean pullNewVersion() {
+	private static boolean pullChanges() {
 		try {
 			String stdOut = exec("git pull");
 			return !stdOut.contains("Already up-to-date.");
@@ -108,5 +121,6 @@ public class SimployCore {
 			"\nRAM used: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 + "MB  (Max " + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB)" +
 			"\nReport produced by Simploy.";
 	}
+
 	
 }

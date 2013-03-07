@@ -50,7 +50,7 @@ public class SimployHttpServer {
 			socket.close();
 		}
 		new Thread() { @Override public void run() {
-			SimployCore.build();
+			SimployCore.buildEvenIfNoChanges();
 		}}.start();
 	}
 
