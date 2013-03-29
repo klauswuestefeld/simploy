@@ -21,15 +21,19 @@ class SimployTestsRunner extends RunListener {
 	private final String _testsFolderPath;
 	private boolean _someTestFailed = false;
 
-	
-	public static void runAllTestsIn(String testsPath, String libJarsFolder) throws Exception {
-		runInSeparateClassLoader(testsPath, libJarsFolder);
+	public static void main(String[] args) {
+		try {
+			runAllTestsIn(args[0], args[1]);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
-
-
-	private static void runInSeparateClassLoader(String testsPath, String libJarsFolder) throws Exception {
-		Class<?> inSeparateClassloader = separateClassLoader(testsPath, libJarsFolder).loadClass(SimployTestsRunner.class.getName());
-		instantiate(inSeparateClassloader, testsPath);
+	
+	
+	private static void runAllTestsIn(String testsPath, String libJarsFolder) throws Exception {
+		Class<?> clazz = classLoaderWith(testsPath, libJarsFolder).loadClass(SimployTestsRunner.class.getName());
+		instantiate(clazz, testsPath);
 	}
 
 
@@ -46,8 +50,8 @@ class SimployTestsRunner extends RunListener {
 	}
 
 	
-	private static void instantiate(Class<?> separateClass, String testsPath) throws Exception {
-		Constructor<?> ctor = separateClass.getConstructor(String.class);
+	private static void instantiate(Class<?> clazz, String testsPath) throws Exception {
+		Constructor<?> ctor = clazz.getConstructor(String.class);
 		ctor.setAccessible(true);
 		try {
 			ctor.newInstance(testsPath);
@@ -58,7 +62,7 @@ class SimployTestsRunner extends RunListener {
 	}
 
 	
-	static private URLClassLoader separateClassLoader(String testsPath, String libJarsFolder) throws Exception {
+	static private URLClassLoader classLoaderWith(String testsPath, String libJarsFolder) throws Exception {
 		ClassLoader noParent = null;
 		return new URLClassLoader(classpath(testsPath, libJarsFolder), noParent);
 	}
@@ -157,6 +161,7 @@ class SimployTestsRunner extends RunListener {
 	}
 
 	static private void accumulateFileNamesEndingWith(List<String> classFiles, File folder, String ending) {
+		if (!folder.exists()) throw new IllegalArgumentException("Folder does not exist: " + folder);
 		for (File candidate : folder.listFiles())
 			if (candidate.isDirectory())
 				accumulateFileNamesEndingWith(classFiles, candidate, ending);

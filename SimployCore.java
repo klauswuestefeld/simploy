@@ -67,7 +67,7 @@ public class SimployCore {
 
 	private static boolean pullChanges() {
 		try {
-			String stdOut = exec("git pull");
+			String stdOut = SimployCommandRunner.exec("git pull");
 			return !stdOut.contains("Already up-to-date.");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,11 +78,21 @@ public class SimployCore {
 		}
 	}
 
-
+	
 	private static void compileTestDeploy() throws Exception {
-		exec(_compileCommand);
-		SimployTestsRunner.runAllTestsIn(_testsFolder, _libJarsFolder);
-		exec(_deployCommand);
+		SimployCommandRunner.exec(_compileCommand);
+		runTests();
+		SimployCommandRunner.exec(_deployCommand);
+	}
+
+
+	private static void runTests() throws Exception {
+		String mainClass = SimployTestsRunner.class.getName();
+		SimployCommandRunner.exec(
+			"java -XX:MaxPermSize=550m " +
+			"-cp " + System.getProperty("java.class.path") + " " +
+			mainClass + " " +
+			_testsFolder + " " + _libJarsFolder);
 	}
 	
 	
@@ -103,11 +113,6 @@ public class SimployCore {
 	}
 
 	
-	private static String exec(String command) throws Exception {
-		return SimployCommandRunner.exec(command);
-	}
-
-
 	static String report() {
 		return
 			"Last build status: " + _lastBuildStatus +
