@@ -33,4 +33,4 @@ Every 5 minutes and every time the hook URL is called, Simploy does a git pull. 
 
 To get a status report on your build use: http:// yourserver.com:44321/
 
-That's it.
+That's it!
