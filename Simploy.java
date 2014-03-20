@@ -33,9 +33,8 @@ public class Simploy {
 
 
 	private static void tryToInitWith(String[] args) throws ArrayIndexOutOfBoundsException, IOException {
-		SimployCore.command = args[0];
-		if (args.length == 2)
-			SimployHttpServer.start(args[1]);
+		if (args.length == 1)
+			SimployHttpServer.start(args[0]);
 	}
 
 

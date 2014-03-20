@@ -6,8 +6,6 @@ import java.util.Date;
 
 public class SimployCore {
 
-	static String command;
-
 	static final PrintStream SYSOUT = System.out;
 	private static StringBuffer _outputsBeingCaptured;
 
@@ -77,7 +75,7 @@ public class SimployCore {
 
 	
 	private static void execCommand() throws Exception {
-		SimployCommandRunner.exec(command);
+		SimployCommandRunner.exec("/bin/bash simploy.sh");
 	}
 
 
