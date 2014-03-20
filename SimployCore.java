@@ -6,10 +6,7 @@ import java.util.Date;
 
 public class SimployCore {
 
-	static String _compileCommand;
-	static String _testsFolder;
-	static String _libJarsFolder;
-	static String _deployCommand;
+	static String command;
 
 	static final PrintStream SYSOUT = System.out;
 	private static StringBuffer _outputsBeingCaptured;
@@ -23,30 +20,30 @@ public class SimployCore {
 	
 
 	synchronized
-	static void build() {
-		build(false);
+	static void runCommandIfNewVersionPresent() {
+		runCommand(false);
 	}
 
 	
 	synchronized
-	static void buildEvenIfNoChanges() {
-		build(true);
+	static void runCommand() {
+		runCommand(true);
 	}
 
 	
-	static private void build(boolean buildEvenIfNoChanges) {
+	static private void runCommand(boolean runEvenIfNoChanges) {
 		startCapturingOutputs();
 		try {
-			tryToBuild(buildEvenIfNoChanges);
+			tryToRunCommand(runEvenIfNoChanges);
 		} finally {
 			stopCapturingOutputs();
 		}
 	}
 
 
-	private static void tryToBuild(boolean buildEvenIfNoChanges) {
+	private static void tryToRunCommand(boolean runEvenIfNoChanges) {
 		boolean hasChanges = pullChanges();
-		if (!hasChanges && !buildEvenIfNoChanges)
+		if (!hasChanges && !runEvenIfNoChanges)
 			return;
 		
 		_lastBuildDate = new Date();
@@ -54,7 +51,7 @@ public class SimployCore {
 		_lastBuildOutputs = _outputsBeingCaptured;
 
 		try {
-			compileTestDeploy();
+			execCommand();
 			_lastSuccessDate = _lastBuildDate;
 			_lastBuildStatus = "SUCCESS";
 			
@@ -79,23 +76,11 @@ public class SimployCore {
 	}
 
 	
-	private static void compileTestDeploy() throws Exception {
-		SimployCommandRunner.exec(_compileCommand);
-		runTests();
-		SimployCommandRunner.exec(_deployCommand);
+	private static void execCommand() throws Exception {
+		SimployCommandRunner.exec(command);
 	}
 
 
-	private static void runTests() throws Exception {
-		String mainClass = SimployTestsRunner.class.getName();
-		SimployCommandRunner.exec(
-			"java -XX:MaxPermSize=550m " +
-			"-cp " + System.getProperty("java.class.path") + " " +
-			mainClass + " " +
-			_testsFolder + " " + _libJarsFolder);
-	}
-	
-	
 	private static void startCapturingOutputs() {
 		_outputsBeingCaptured = new StringBuffer();
 		PrintStream filter = new PrintStream(new FilterOutputStream(SYSOUT) {  @Override public void write(int b) throws IOException {
