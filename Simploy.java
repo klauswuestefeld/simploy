@@ -5,19 +5,20 @@ public class Simploy {
 
 	private static final String USAGE =
 		"Usage: " +
-		"\n  java Simploy commandToBeRun password" +
+		"\n  java Simploy password" +
 		"\n" +
 		"\nExample:" +
-		"\n  java Simploy \"ant run\" pAsSwOrD" +
+		"\n  java Simploy pAsSwOrD" +
 		"\n";
 
 	
 	public static void main(String[] args) throws Exception {
 		initWith(args);
-		
+
+		SimployCore.runCommand();
 		while (true) {
-			SimployCore.runCommandIfNewVersionPresent();
 			waitAFewMinutes();
+			SimployCore.runCommandIfNewVersionPresent();
 		}
 	}
 	
