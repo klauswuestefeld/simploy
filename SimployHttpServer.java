@@ -11,7 +11,6 @@ public class SimployHttpServer {
 	private static String _password;
 	private static ServerSocket _serverSocket;
 
-	private static final int TCP_PORT = 44321;
 	private static final int REQUEST_TIMEOUT = 1000;
 	private static final String REPLY_HEADER =
 			"HTTP/1.1 200 OK\r\n" +
@@ -20,10 +19,10 @@ public class SimployHttpServer {
 
 	private static final PrintStream OUT = System.out;
 
-	static void start(String password) throws IOException {
+	static void start(int port, String password) throws IOException {
 		_password = password;
-		_serverSocket = new ServerSocket(TCP_PORT);
-		OUT.println("Listening for requests on port " + TCP_PORT);
+		_serverSocket = new ServerSocket(port);
+		OUT.println("Listening for requests on port " + port);
 		
 		new Thread() { @Override public void run() {
 			while (true)
@@ -89,5 +88,3 @@ public class SimployHttpServer {
 	}
 	
 }
-
-

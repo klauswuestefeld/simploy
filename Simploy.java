@@ -5,10 +5,10 @@ public class Simploy {
 
 	private static final String USAGE =
 		"Usage: " +
-		"\n  java Simploy password" +
+		"\n  java Simploy port password" +
 		"\n" +
 		"\nExample:" +
-		"\n  java Simploy pAsSwOrD" +
+		"\n  java Simploy 44321 pAsSwOrD" +
 		"\n";
 
 	
@@ -34,8 +34,9 @@ public class Simploy {
 
 
 	private static void tryToInitWith(String[] args) throws ArrayIndexOutOfBoundsException, IOException {
-		if (args.length == 1)
-			SimployHttpServer.start(args[0]);
+		int port = Integer.parseInt(args[0]);
+		String password = args[1];
+		SimployHttpServer.start(port, password);
 	}
 
 
