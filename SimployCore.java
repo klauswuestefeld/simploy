@@ -104,8 +104,9 @@ public class SimployCore {
 			"\n" +
 			"\nLast build outputs (stdOut and stdErr): " +
 			"\n" + _lastBuildOutputs +
-			"\n\n\n" +
-			"\n-----------------------------------------------------" +
+			"\n\n" +
+			"Last build status: " + _lastBuildStatus +
+			"\n\n\n-----------------------------------------------------" +
 			"\nRAM used: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 + "MB  (Max " + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB)" +
 			"\nReport produced by Simploy.";
 	}
